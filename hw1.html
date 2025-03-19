@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homework 01 - WebGL Viewport</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+        canvas {
+            border: 1px solid black;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <script>
+        function initWebGL() {
+            const canvas = document.getElementById("canvas");
+            const gl = canvas.getContext("webgl");
+            if (!gl) {
+                console.error("WebGL not supported");
+                return;
+            }
+            
+            resizeCanvas(gl);
+        }
+
+        function resizeCanvas(gl) {
+            const canvas = gl.canvas;
+            const size = Math.min(window.innerWidth, window.innerHeight) * 0.9;
+            canvas.width = size;
+            canvas.height = size;
+            gl.viewport(0, 0, canvas.width, canvas.height);
+            drawScene(gl);
+        }
+
+        function drawScene(gl) {
+            const halfWidth = gl.canvas.width / 2;
+            const halfHeight = gl.canvas.height / 2;
+            
+            gl.enable(gl.SCISSOR_TEST);
+            
+            // 1st Quadrant (top-right) - Green
+            gl.viewport(halfWidth, halfHeight, halfWidth, halfHeight);
+            gl.scissor(halfWidth, halfHeight, halfWidth, halfHeight);
+            gl.clearColor(0.0, 1.0, 0.0, 1.0);
+            gl.clear(gl.COLOR_BUFFER_BIT);
+            
+            // 2nd Quadrant (top-left) - Red (swapped with Yellow)
+            gl.viewport(0, halfHeight, halfWidth, halfHeight);
+            gl.scissor(0, halfHeight, halfWidth, halfHeight);
+            gl.clearColor(1.0, 0.0, 0.0, 1.0);
+            gl.clear(gl.COLOR_BUFFER_BIT);
+            
+            // 3rd Quadrant (bottom-left) - Blue
+            gl.viewport(0, 0, halfWidth, halfHeight);
+            gl.scissor(0, 0, halfWidth, halfHeight);
+            gl.clearColor(0.0, 0.0, 1.0, 1.0);
+            gl.clear(gl.COLOR_BUFFER_BIT);
+            
+            // 4th Quadrant (bottom-right) - Yellow (swapped with Red)
+            gl.viewport(halfWidth, 0, halfWidth, halfHeight);
+            gl.scissor(halfWidth, 0, halfWidth, halfHeight);
+            gl.clearColor(1.0, 1.0, 0.0, 1.0);
+            gl.clear(gl.COLOR_BUFFER_BIT);
+            
+            gl.disable(gl.SCISSOR_TEST);
+        }
+
+        window.addEventListener("resize", () => initWebGL());
+        window.addEventListener("load", () => initWebGL());
+    </script>
+</body>
+</html>
